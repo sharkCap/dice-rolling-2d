@@ -5,20 +5,46 @@ const texts = {
   open: '\u5f00',
   score: '\u70b9\u6570',
   sheetTitle: '\u9009\u62e9\u9ab0\u5b50\u6570',
-  ready: '\u70b9\u51fb\u6447\u4e00\u6447\uff0c\u9ab0\u76c5\u4f1a\u5148\u76d6\u4f4f\u7ed3\u679c\u3002',
+  ready: '\u9ab0\u76c5\u5df2\u76d6\u597d\uff0c\u70b9\u51fb\u6447\u4e00\u6447\u5f00\u59cb\u3002',
   shaking: '\u9ab0\u76c5\u6b63\u5728\u6447\u52a8...',
   covered: '\u7ed3\u679c\u5df2\u76d6\u4f4f\uff0c\u70b9\u51fb\u5f00\u76c5\u67e5\u770b\u3002',
   revealed: '\u5df2\u5f00\u76c5\uff0c\u53ef\u4ee5\u518d\u6447\u4e00\u5c40\u3002',
+  reCovered: '\u5df2\u76d6\u4e0a\uff0c\u4e0a\u6ed1\u6216\u70b9\u51fb\u9ab0\u76c5\u53ef\u518d\u6b21\u6253\u5f00\u3002',
   shake: '\u6447\u4e00\u6447',
   shakingButton: '\u6447\u52a8\u4e2d...',
-  reveal: '\u5f00\u76c5',
+}
+
+const cupClosedTop = 96
+const cupOpenTop = -312
+const cupDragRatio = 1.45
+const cupHiddenThreshold = -40
+const diceLayouts = {
+  1: [{ x: 0, y: 0 }],
+  2: [{ x: -72, y: 18 }, { x: 78, y: -18 }],
+  3: [{ x: -100, y: 34 }, { x: 0, y: -42 }, { x: 100, y: 36 }],
+  4: [{ x: -92, y: -50 }, { x: 92, y: -42 }, { x: -86, y: 68 }, { x: 86, y: 62 }],
+  5: [{ x: -130, y: -58 }, { x: 0, y: -70 }, { x: 128, y: -50 }, { x: -72, y: 70 }, { x: 72, y: 66 }],
+  6: [{ x: -136, y: -72 }, { x: 0, y: -76 }, { x: 136, y: -66 }, { x: -136, y: 66 }, { x: 0, y: 76 }, { x: 136, y: 62 }],
+  7: [{ x: -142, y: -82 }, { x: -48, y: -84 }, { x: 48, y: -78 }, { x: 142, y: -70 }, { x: -92, y: 72 }, { x: 8, y: 82 }, { x: 108, y: 66 }],
+  8: [{ x: -142, y: -84 }, { x: -48, y: -88 }, { x: 48, y: -82 }, { x: 142, y: -76 }, { x: -142, y: 72 }, { x: -48, y: 84 }, { x: 48, y: 78 }, { x: 142, y: 68 }],
 }
 
 function createDice(count) {
+  const layout = diceLayouts[count]
+  const small = count > 4
+
   return Array.from({ length: count }, (_, index) => ({
     id: index,
     value: Math.floor(Math.random() * 6) + 1,
+    left: layout[index].x + randomBetween(-18, 18) - (small ? 43 : 56),
+    top: layout[index].y + randomBetween(-14, 14) - (small ? 43 : 56),
+    rotate: randomBetween(-18, 18),
+    sizeClass: small ? 'small' : 'normal',
   }))
+}
+
+function randomBetween(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
 function createCountOptions() {
@@ -44,9 +70,12 @@ Page({
     diceCount: 2,
     dice: createDice(2),
     total: 0,
-    covered: false,
+    covered: true,
+    resultHidden: true,
     canReveal: false,
     rolling: false,
+    draggingCup: false,
+    cupTop: cupClosedTop,
     countPickerVisible: false,
     labelEyebrow: texts.eyebrow,
     labelTitle: texts.title,
@@ -100,7 +129,10 @@ Page({
     this.setData({
       diceCount,
       covered: false,
+      resultHidden: false,
       canReveal: false,
+      draggingCup: false,
+      cupTop: cupOpenTop,
       countPickerVisible: false,
       statusText: texts.ready,
       primaryText: texts.shake,
@@ -110,11 +142,6 @@ Page({
   },
 
   primaryAction() {
-    if (this.data.canReveal) {
-      this.revealDice()
-      return
-    }
-
     this.rollDice()
   },
 
@@ -133,8 +160,11 @@ Page({
 
     this.setData({
       covered: true,
+      resultHidden: true,
       canReveal: false,
       rolling: true,
+      draggingCup: false,
+      cupTop: cupClosedTop,
       countPickerVisible: false,
       statusText: texts.shaking,
       primaryText: texts.shakingButton,
@@ -157,8 +187,10 @@ Page({
     this.setData({
       rolling: false,
       canReveal: true,
+      resultHidden: true,
+      cupTop: cupClosedTop,
       statusText: texts.covered,
-      primaryText: texts.reveal,
+      primaryText: texts.shake,
     })
 
     wx.vibrateShort({
@@ -171,10 +203,81 @@ Page({
 
     this.setData({
       covered: false,
+      resultHidden: false,
       canReveal: false,
+      draggingCup: false,
+      cupTop: cupOpenTop,
       statusText: texts.revealed,
       primaryText: texts.shake,
     })
+  },
+
+  coverDice() {
+    if (this.data.rolling) return
+
+    this.setData({
+      covered: true,
+      resultHidden: true,
+      canReveal: true,
+      draggingCup: false,
+      cupTop: cupClosedTop,
+      statusText: texts.reCovered,
+      primaryText: texts.shake,
+    })
+  },
+
+  toggleCup() {
+    if (this.data.rolling) return
+
+    if (this.ignoreNextCupTap) {
+      this.ignoreNextCupTap = false
+      return
+    }
+
+    if (this.data.covered) {
+      this.revealDice()
+      return
+    }
+
+    this.coverDice()
+  },
+
+  onCupTouchStart(event) {
+    if (this.data.rolling) return
+
+    const touch = event.touches[0]
+    this.cupTouchStartY = touch.clientY
+    this.cupTouchStartTop = this.data.cupTop
+    this.cupMoved = false
+    this.setData({ draggingCup: true })
+  },
+
+  onCupTouchMove(event) {
+    if (this.data.rolling || this.cupTouchStartY === undefined) return
+
+    const touch = event.touches[0]
+    const delta = (touch.clientY - this.cupTouchStartY) * cupDragRatio
+    const nextTop = Math.max(cupOpenTop, Math.min(cupClosedTop, this.cupTouchStartTop + delta))
+
+    if (Math.abs(delta) > 8) {
+      this.cupMoved = true
+    }
+
+    this.setData({
+      covered: nextTop > cupHiddenThreshold,
+      resultHidden: nextTop > cupHiddenThreshold,
+      canReveal: true,
+      cupTop: Math.round(nextTop),
+    })
+  },
+
+  onCupTouchEnd() {
+    if (this.data.rolling || this.cupTouchStartY === undefined) return
+
+    this.ignoreNextCupTap = this.cupMoved
+    this.cupTouchStartY = undefined
+    this.cupTouchStartTop = undefined
+    this.setData({ draggingCup: false })
   },
 
   updateDice(dice) {

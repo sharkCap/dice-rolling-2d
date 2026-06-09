@@ -104,79 +104,32 @@ page {
 }
 
 .dice-cluster {
-  width: 500rpx;
-  min-height: 308rpx;
-  display: grid;
-  grid-template-columns: repeat(4, 104rpx);
-  justify-content: center;
-  align-content: center;
-  gap: 22rpx;
+  width: 520rpx;
+  height: 330rpx;
   position: relative;
   z-index: 2;
 }
 
-.dice-count-1,
-.dice-count-2,
-.dice-count-3,
-.dice-count-4 {
-  grid-template-columns: repeat(2, 112rpx);
-  width: 310rpx;
-}
-
 .die {
-  width: 104rpx;
-  height: 104rpx;
-  position: relative;
+  width: 112rpx;
+  height: 112rpx;
+  position: absolute;
   border: 3rpx solid #ded6ca;
   border-radius: 18rpx;
   background: #fffaf2;
   box-shadow: inset -8rpx -10rpx 0 #e2d8c9, inset 6rpx 6rpx 0 #ffffff, 0 12rpx 16rpx rgba(0, 0, 0, 0.26);
-  transform: rotate(-8deg);
   transition: opacity 120ms ease, transform 120ms ease;
 }
 
-.dice-count-1 .die,
-.dice-count-2 .die,
-.dice-count-3 .die,
-.dice-count-4 .die {
-  width: 112rpx;
-  height: 112rpx;
-}
-
-.die-1 {
-  transform: rotate(9deg) translateY(8rpx);
-}
-
-.die-2 {
-  transform: rotate(-14deg) translateY(-6rpx);
-}
-
-.die-3 {
-  transform: rotate(12deg) translateY(4rpx);
-}
-
-.die-4 {
-  transform: rotate(-6deg) translateY(-4rpx);
-}
-
-.die-5 {
-  transform: rotate(10deg) translateY(6rpx);
-}
-
-.die-6 {
-  transform: rotate(-11deg) translateY(-4rpx);
-}
-
-.die-7 {
-  transform: rotate(7deg);
+.die-small {
+  width: 86rpx;
+  height: 86rpx;
+  border-radius: 15rpx;
+  box-shadow: inset -7rpx -8rpx 0 #e2d8c9, inset 5rpx 5rpx 0 #ffffff, 0 10rpx 14rpx rgba(0, 0, 0, 0.24);
 }
 
 .is-rolling .die {
-  transform: rotate(18deg) translate(8rpx, -8rpx) scale(0.92);
-}
-
-.is-covered .dice-cluster {
-  opacity: 0;
+  opacity: 0.82;
 }
 
 .pip {
@@ -187,14 +140,6 @@ page {
   border-radius: 50%;
   background: #1c2427;
   box-shadow: inset 3rpx 3rpx 0 rgba(255, 255, 255, 0.18);
-}
-
-.dice-count-1 .pip,
-.dice-count-2 .pip,
-.dice-count-3 .pip,
-.dice-count-4 .pip {
-  width: 20rpx;
-  height: 20rpx;
 }
 
 .pip-1,
@@ -233,34 +178,86 @@ page {
   right: 20rpx;
 }
 
-.dice-count-1 .pip-4,
-.dice-count-1 .pip-5,
-.dice-count-1 .pip-6,
-.dice-count-2 .pip-4,
-.dice-count-2 .pip-5,
-.dice-count-2 .pip-6,
-.dice-count-3 .pip-4,
-.dice-count-3 .pip-5,
-.dice-count-3 .pip-6,
-.dice-count-4 .pip-4,
-.dice-count-4 .pip-5,
-.dice-count-4 .pip-6 {
+.die-normal .pip {
+  width: 20rpx;
+  height: 20rpx;
+}
+
+.die-normal .pip-1,
+.die-normal .pip-2,
+.die-normal .pip-3 {
+  top: 22rpx;
+}
+
+.die-normal .pip-4,
+.die-normal .pip-5,
+.die-normal .pip-6 {
   top: 46rpx;
 }
 
-.dice-count-1 .pip-2,
-.dice-count-1 .pip-5,
-.dice-count-1 .pip-8,
-.dice-count-2 .pip-2,
-.dice-count-2 .pip-5,
-.dice-count-2 .pip-8,
-.dice-count-3 .pip-2,
-.dice-count-3 .pip-5,
-.dice-count-3 .pip-8,
-.dice-count-4 .pip-2,
-.dice-count-4 .pip-5,
-.dice-count-4 .pip-8 {
+.die-normal .pip-7,
+.die-normal .pip-8,
+.die-normal .pip-9 {
+  bottom: 22rpx;
+}
+
+.die-normal .pip-1,
+.die-normal .pip-4,
+.die-normal .pip-7 {
+  left: 22rpx;
+}
+
+.die-normal .pip-2,
+.die-normal .pip-5,
+.die-normal .pip-8 {
   left: 46rpx;
+}
+
+.die-normal .pip-3,
+.die-normal .pip-6,
+.die-normal .pip-9 {
+  right: 22rpx;
+}
+
+.die-small .pip {
+  width: 14rpx;
+  height: 14rpx;
+}
+
+.die-small .pip-1,
+.die-small .pip-2,
+.die-small .pip-3 {
+  top: 16rpx;
+}
+
+.die-small .pip-4,
+.die-small .pip-5,
+.die-small .pip-6 {
+  top: 35rpx;
+}
+
+.die-small .pip-7,
+.die-small .pip-8,
+.die-small .pip-9 {
+  bottom: 16rpx;
+}
+
+.die-small .pip-1,
+.die-small .pip-4,
+.die-small .pip-7 {
+  left: 16rpx;
+}
+
+.die-small .pip-2,
+.die-small .pip-5,
+.die-small .pip-8 {
+  left: 35rpx;
+}
+
+.die-small .pip-3,
+.die-small .pip-6,
+.die-small .pip-9 {
+  right: 16rpx;
 }
 
 .value-1 .pip-5,
@@ -297,16 +294,14 @@ page {
   height: 440rpx;
   position: absolute;
   left: 50%;
-  top: 51%;
   z-index: 4;
-  transform: translate(-50%, -50%);
-  transition: transform 240ms ease, opacity 220ms ease;
+  transform: translateX(-50%);
+  transition: top 140ms ease, opacity 160ms ease;
+  touch-action: none;
 }
 
 .cup-mask.lifted {
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(-50%, -96%) scale(0.9);
+  opacity: 1;
 }
 
 .cup-mask.show {
@@ -315,6 +310,10 @@ page {
 
 .cup-mask.shake {
   animation: cup-shake 130ms linear infinite;
+}
+
+.cup-mask.dragging {
+  transition: none;
 }
 
 .cup-lip {
@@ -492,14 +491,14 @@ button[disabled] {
 
 @keyframes cup-shake {
   0% {
-    transform: translate(-51%, -50%) rotate(-3deg);
+    transform: translateX(-51%) rotate(-3deg);
   }
 
   50% {
-    transform: translate(-49%, -50%) rotate(3deg);
+    transform: translateX(-49%) rotate(3deg);
   }
 
   100% {
-    transform: translate(-51%, -50%) rotate(-3deg);
+    transform: translateX(-51%) rotate(-3deg);
   }
 }

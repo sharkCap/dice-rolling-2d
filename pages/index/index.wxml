@@ -8,9 +8,14 @@
 
   <view class="table">
     <view class="table-rim">
-      <view class="dice-zone {{rolling ? 'is-rolling' : ''}} {{covered ? 'is-covered' : ''}}">
+      <view class="dice-zone {{rolling ? 'is-rolling' : ''}}">
         <view class="dice-cluster dice-count-{{diceCount}}">
-          <view wx:for="{{dice}}" wx:key="id" class="die value-{{item.value}} die-{{index}}">
+          <view
+            wx:for="{{dice}}"
+            wx:key="id"
+            class="die die-{{item.sizeClass}} value-{{item.value}}"
+            style="left: 50%; top: 50%; margin-left: {{item.left}}rpx; margin-top: {{item.top}}rpx; transform: rotate({{item.rotate}}deg);"
+          >
             <view class="pip pip-1"></view>
             <view class="pip pip-2"></view>
             <view class="pip pip-3"></view>
@@ -23,7 +28,15 @@
           </view>
         </view>
 
-        <view class="cup-mask {{covered ? 'show' : 'lifted'}} {{rolling ? 'shake' : ''}}" bindtap="revealDice">
+        <view
+          class="cup-mask {{covered ? 'show' : 'lifted'}} {{draggingCup ? 'dragging' : ''}} {{rolling ? 'shake' : ''}}"
+          style="top: {{cupTop}}rpx;"
+          bindtap="toggleCup"
+          bindtouchstart="onCupTouchStart"
+          bindtouchmove="onCupTouchMove"
+          bindtouchend="onCupTouchEnd"
+          bindtouchcancel="onCupTouchEnd"
+        >
           <view class="cup-lip"></view>
           <view class="cup-body">
             <text class="cup-mark">{{labelOpen}}</text>
@@ -38,7 +51,7 @@
     <text class="status">{{statusText}}</text>
     <view class="result-line">
       <text class="result-label">{{labelScore}}</text>
-      <text class="result-value">{{covered ? '--' : total}}</text>
+      <text class="result-value">{{resultHidden ? '--' : total}}</text>
     </view>
   </view>
 
