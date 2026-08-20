@@ -5,6 +5,8 @@ const texts = {
   open: '\u5f00',
   score: '\u70b9\u6570',
   sheetTitle: '\u9009\u62e9\u9ab0\u5b50\u6570',
+  autoReveal: '\u81ea\u52a8\u5f00\u76c5',
+  autoRevealHint: '\u6447\u5b8c\u540e\u81ea\u52a8\u6253\u5f00',
   ready: '\u9ab0\u76c5\u5df2\u76d6\u597d\uff0c\u70b9\u51fb\u6447\u4e00\u6447\u5f00\u59cb\u3002',
   shaking: '\u9ab0\u76c5\u6b63\u5728\u6447\u52a8...',
   covered: '\u7ed3\u679c\u5df2\u76d6\u4f4f\uff0c\u70b9\u51fb\u5f00\u76c5\u67e5\u770b\u3002',
@@ -18,6 +20,7 @@ const cupClosedTop = 96
 const cupOpenTop = -312
 const cupDragRatio = 1.45
 const cupHiddenThreshold = -40
+const autoRevealDelay = 180
 const diceLayouts = {
   1: [{ x: 0, y: 0 }],
   2: [{ x: -72, y: 18 }, { x: 78, y: -18 }],
@@ -76,6 +79,7 @@ Page({
     rolling: false,
     draggingCup: false,
     cupTop: cupClosedTop,
+    autoReveal: false,
     countPickerVisible: false,
     labelEyebrow: texts.eyebrow,
     labelTitle: texts.title,
@@ -83,6 +87,8 @@ Page({
     labelOpen: texts.open,
     labelScore: texts.score,
     labelSheetTitle: texts.sheetTitle,
+    labelAutoReveal: texts.autoReveal,
+    labelAutoRevealHint: texts.autoRevealHint,
     statusText: texts.ready,
     primaryText: texts.shake,
     diceCountText: createDiceCountText(2),
@@ -96,6 +102,8 @@ Page({
   },
 
   onUnload() {
+    this.clearAutoRevealTimer()
+
     if (this.rollAudios) {
       this.rollAudios.forEach((audio) => audio.destroy())
     }
@@ -119,6 +127,12 @@ Page({
   },
 
   noop() {},
+
+  toggleAutoReveal(event) {
+    this.setData({
+      autoReveal: event.detail.value,
+    })
+  },
 
   selectDiceCount(event) {
     if (this.data.rolling) return
@@ -147,6 +161,8 @@ Page({
 
   rollDice() {
     if (this.data.rolling) return
+
+    this.clearAutoRevealTimer()
 
     let ticks = 0
     const maxTicks = 16
@@ -196,10 +212,18 @@ Page({
     wx.vibrateShort({
       type: 'medium',
     })
+
+    if (this.data.autoReveal) {
+      this.autoRevealTimer = setTimeout(() => {
+        this.revealDice()
+      }, autoRevealDelay)
+    }
   },
 
   revealDice() {
     if (this.data.rolling || !this.data.canReveal) return
+
+    this.clearAutoRevealTimer()
 
     this.setData({
       covered: false,
@@ -214,6 +238,8 @@ Page({
 
   coverDice() {
     if (this.data.rolling) return
+
+    this.clearAutoRevealTimer()
 
     this.setData({
       covered: true,
@@ -285,5 +311,12 @@ Page({
       dice,
       total: sumDice(dice),
     })
+  },
+
+  clearAutoRevealTimer() {
+    if (this.autoRevealTimer) {
+      clearTimeout(this.autoRevealTimer)
+      this.autoRevealTimer = null
+    }
   },
 })

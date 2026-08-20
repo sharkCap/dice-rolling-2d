@@ -68,6 +68,13 @@
       <view class="sheet-head">
         <text class="sheet-title">{{labelSheetTitle}}</text>
       </view>
+      <view class="auto-row">
+        <view>
+          <text class="auto-title">{{labelAutoReveal}}</text>
+          <text class="auto-desc">{{labelAutoRevealHint}}</text>
+        </view>
+        <switch checked="{{autoReveal}}" bindchange="toggleAutoReveal" color="#b43d34" />
+      </view>
       <view class="count-grid">
         <button
           wx:for="{{countOptions}}"
