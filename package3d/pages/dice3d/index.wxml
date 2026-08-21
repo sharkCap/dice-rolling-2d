@@ -1,0 +1,93 @@
+<view class="page">
+  <view class="game-surface {{rolling ? 'is-rolling' : ''}}">
+    <view class="hud">
+      <view class="hud-back" bindtap="backTo2d">2D</view>
+      <view class="hud-status">
+        <text class="hud-status-title">{{statusText}}</text>
+        <text class="hud-status-hint">{{rolling ? '骰盅正在摇动' : '拖动骰盅查看结果'}}</text>
+      </view>
+      <view class="hud-total">
+        <text class="hud-total-label">点数</text>
+        <text class="hud-total-value">{{resultHidden ? '--' : total}}</text>
+      </view>
+    </view>
+
+    <view class="game-area">
+      <image class="tray" src="/package3d/assets/tray.png" mode="scaleToFill" />
+
+      <view class="dice-layer">
+        <image
+          wx:for="{{dice}}"
+          wx:key="id"
+          class="die die-{{item.sizeClass}} die-slot-{{item.slot}}"
+          src="{{item.src}}"
+          mode="aspectFit"
+        />
+      </view>
+
+      <movable-area class="cup-area">
+        <movable-view
+          class="cup-movable {{draggingCup ? 'dragging' : ''}}"
+          direction="vertical"
+          inertia="true"
+          y="{{cupY}}"
+          disabled="{{rolling}}"
+          damping="55"
+          friction="8"
+          bindchange="onCupChange"
+          bindtouchstart="onCupTouchStart"
+          bindtouchend="onCupTouchEnd"
+          bindtouchcancel="onCupTouchEnd"
+        >
+          <image class="cup" src="/package3d/assets/cup.png" mode="scaleToFill" />
+        </movable-view>
+      </movable-area>
+    </view>
+
+    <view class="controls">
+      <view class="control-side control-cover" bindtap="toggleCup">
+        <text class="control-icon">{{covered ? '↑' : '↓'}}</text>
+        <text class="control-label">{{covered ? '开盅' : '盖盅'}}</text>
+      </view>
+
+      <view class="control-roll {{rolling ? 'disabled' : ''}}" bindtap="rollDice">
+        <text class="roll-label {{rolling ? 'rolling-label' : ''}}">{{rolling ? '摇动中' : '摇'}}</text>
+      </view>
+
+      <view class="control-side control-settings" bindtap="openSettings">
+        <text class="control-count">{{diceCount}}</text>
+        <text class="control-label">骰子</text>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{settingsVisible}}" class="modal" bindtap="closeSettings">
+    <view class="settings-sheet" catchtap="noop">
+      <view class="sheet-header">
+        <text class="sheet-title">骰局设置</text>
+        <view class="sheet-close" bindtap="closeSettings">×</view>
+      </view>
+
+      <view class="setting-row">
+        <view class="setting-copy">
+          <text class="setting-title">骰子数量</text>
+          <text class="setting-hint">选择 1 至 6 颗</text>
+        </view>
+        <view class="count-stepper">
+          <view class="stepper-button" data-delta="-1" bindtap="changeDiceCount">−</view>
+          <text class="stepper-value">{{diceCount}}</text>
+          <view class="stepper-button" data-delta="1" bindtap="changeDiceCount">＋</view>
+        </view>
+      </view>
+
+      <view class="setting-row">
+        <view class="setting-copy">
+          <text class="setting-title">自动开盅</text>
+          <text class="setting-hint">摇完后自动打开骰盅</text>
+        </view>
+        <switch checked="{{autoReveal}}" bindchange="toggleAutoReveal" color="#c94840" />
+      </view>
+    </view>
+  </view>
+</view>
+

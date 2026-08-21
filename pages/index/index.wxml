@@ -4,6 +4,10 @@
       <text class="eyebrow">{{labelEyebrow}}</text>
       <text class="title">{{labelTitle}}</text>
     </view>
+    <button class="mode-entry" bindtap="open3d" disabled="{{rolling}}">
+      <text class="mode-entry-mark">3D</text>
+      <text>立体模式</text>
+    </button>
   </view>
 
   <view class="table">

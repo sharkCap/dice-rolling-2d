@@ -3,6 +3,15 @@
     "pages/index/index",
     "pages/logs/logs"
   ],
+  "subPackages": [
+    {
+      "root": "package3d",
+      "name": "dice3d",
+      "pages": [
+        "pages/dice3d/index"
+      ]
+    }
+  ],
   "window": {
     "navigationBarTextStyle": "white",
     "navigationBarTitleText": "",

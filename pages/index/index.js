@@ -159,6 +159,14 @@ Page({
     this.rollDice()
   },
 
+  open3d() {
+    if (this.data.rolling) return
+
+    wx.navigateTo({
+      url: '/package3d/pages/dice3d/index',
+    })
+  },
+
   rollDice() {
     if (this.data.rolling) return
 
