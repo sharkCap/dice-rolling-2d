@@ -13,7 +13,7 @@
     </view>
 
     <view class="game-area">
-      <image class="tray" src="/package3d/assets/tray.png" mode="scaleToFill" />
+      <image class="tray" src="/package3d/assets/tray-v2.png" mode="scaleToFill" />
 
       <view class="dice-layer">
         <image
@@ -39,7 +39,7 @@
           bindtouchend="onCupTouchEnd"
           bindtouchcancel="onCupTouchEnd"
         >
-          <image class="cup" src="/package3d/assets/cup.png" mode="scaleToFill" />
+          <image class="cup" src="/package3d/assets/cup-v2.png" mode="scaleToFill" />
         </movable-view>
       </movable-area>
     </view>

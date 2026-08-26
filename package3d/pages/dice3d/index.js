@@ -37,7 +37,7 @@ function createDice(count) {
       value,
       slot: layout.slot,
       sizeClass: count > 4 ? 'small' : 'normal',
-      src: '/package3d/assets/dice/touzi' + value + '-' + angle + '.png',
+      src: '/package3d/assets/dice/touzi' + value + '-' + angle + '-v2.png',
     }
   })
 }
