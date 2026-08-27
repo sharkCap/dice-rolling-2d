@@ -1,7 +1,7 @@
 const CUP_OPEN_Y = 0
-const CUP_CLOSED_Y = 416
-const CUP_REVEAL_Y = 280
-const CUP_HIDE_Y = 300
+const CUP_CLOSED_Y = 358
+const CUP_REVEAL_RATIO = 0.67
+const CUP_HIDE_RATIO = 0.72
 const AUTO_REVEAL_DELAY = 800
 const ROLL_TICK_MS = 70
 const ROLL_TICKS = 12
@@ -68,6 +68,9 @@ Page({
     const diceCount = savedCount >= 1 && savedCount <= 6 ? savedCount : this.data.diceCount
     const autoReveal = typeof savedAutoReveal === 'boolean' ? savedAutoReveal : this.data.autoReveal
     const dice = createDice(diceCount)
+    this.cupClosedY = CUP_CLOSED_Y
+    this.cupRevealY = Math.round(CUP_CLOSED_Y * CUP_REVEAL_RATIO)
+    this.cupHideY = Math.round(CUP_CLOSED_Y * CUP_HIDE_RATIO)
     this.currentCupY = CUP_CLOSED_Y
 
     this.setData({
@@ -79,6 +82,27 @@ Page({
 
     this.rollAudioIndex = 0
     this.rollAudios = [this.createRollAudio(), this.createRollAudio()]
+  },
+
+  onReady() {
+    const query = wx.createSelectorQuery()
+    query.select('.cup-area').boundingClientRect()
+    query.select('.cup-movable').boundingClientRect()
+    query.exec((res) => {
+      const area = res && res[0]
+      const view = res && res[1]
+      if (!area || !view || !(area.height > 0) || !(view.height > 0)) return
+
+      const maxY = Math.max(0, area.height - view.height)
+      this.cupClosedY = Math.round(maxY)
+      this.cupRevealY = Math.round(maxY * CUP_REVEAL_RATIO)
+      this.cupHideY = Math.round(maxY * CUP_HIDE_RATIO)
+
+      if (this.data.covered && !this.data.rolling) {
+        this.currentCupY = this.cupClosedY
+        this.setData({ cupY: this.cupClosedY })
+      }
+    })
   },
 
   onUnload() {
@@ -111,14 +135,14 @@ Page({
     this.clearRevealTimer()
     this.playRollAudio()
 
-    this.currentCupY = CUP_CLOSED_Y
+    this.currentCupY = this.cupClosedY
     this.setData({
       rolling: true,
       covered: true,
       resultHidden: true,
       canReveal: true,
       draggingCup: false,
-      cupY: CUP_CLOSED_Y,
+      cupY: this.cupClosedY,
       settingsVisible: false,
       statusText: texts.rolling,
     })
@@ -138,13 +162,13 @@ Page({
 
   finishRoll(dice) {
     this.updateDice(dice)
-    this.currentCupY = CUP_CLOSED_Y
+    this.currentCupY = this.cupClosedY
     this.setData({
       rolling: false,
       covered: true,
       resultHidden: true,
       canReveal: true,
-      cupY: CUP_CLOSED_Y,
+      cupY: this.cupClosedY,
       statusText: texts.covered,
     })
 
@@ -189,7 +213,6 @@ Page({
     if (this.data.rolling) return
 
     this.clearRevealTimer()
-    this.draggingCup = false
     this.currentCupY = CUP_OPEN_Y
     this.setData({
       covered: false,
@@ -203,16 +226,14 @@ Page({
 
   coverDice() {
     if (this.data.rolling) return
-
     this.clearRevealTimer()
-    this.draggingCup = false
-    this.currentCupY = CUP_CLOSED_Y
+    this.currentCupY = this.cupClosedY
     this.setData({
       covered: true,
       resultHidden: true,
       canReveal: true,
       draggingCup: false,
-      cupY: CUP_CLOSED_Y,
+      cupY: this.cupClosedY,
       statusText: texts.reCovered,
     })
   },
@@ -223,13 +244,13 @@ Page({
     const rawY = Number(event.detail.y)
     if (!Number.isFinite(rawY)) return
 
-    const cupY = Math.max(CUP_OPEN_Y, Math.min(CUP_CLOSED_Y, Math.round(rawY)))
+    const cupY = Math.max(CUP_OPEN_Y, Math.min(this.cupClosedY, Math.round(rawY)))
     this.currentCupY = cupY
 
     const source = event.detail.source
     const userMotion = ['touch', 'touch-out-of-bounds', 'out-of-bounds', 'friction'].includes(source)
-    const shouldHide = cupY >= CUP_HIDE_Y
-    const shouldReveal = cupY <= CUP_REVEAL_Y
+    const shouldHide = cupY >= this.cupHideY
+    const shouldReveal = cupY <= this.cupRevealY
 
     if (this.data.rolling || !userMotion) return
     if (shouldHide && (!this.data.covered || !this.data.resultHidden)) {
@@ -250,12 +271,18 @@ Page({
   onCupTouchStart() {
     if (this.data.rolling) return
     this.clearRevealTimer()
-    this.draggingCup = true
+    this.setData({ draggingCup: true })
   },
 
   onCupTouchEnd() {
     if (this.data.rolling) return
-    this.draggingCup = false
+
+    const targetY = this.data.covered ? this.cupClosedY : CUP_OPEN_Y
+    this.currentCupY = targetY
+    this.setData({
+      draggingCup: false,
+      cupY: targetY,
+    })
   },
 
   changeDiceCount(event) {
@@ -308,22 +335,6 @@ Page({
     }
   },
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
