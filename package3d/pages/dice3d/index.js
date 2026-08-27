@@ -82,6 +82,18 @@ Page({
 
     this.rollAudioIndex = 0
     this.rollAudios = [this.createRollAudio(), this.createRollAudio()]
+    this.warmUpRollAudios()
+  },
+
+  // 静音预播一遍触发解码，避免第一次 play() 时才加载音频导致延迟
+  warmUpRollAudios() {
+    if (this.rollAudiosWarmedUp) return
+    this.rollAudiosWarmedUp = true
+
+    this.rollAudios.forEach((audio) => {
+      audio.volume = 0
+      audio.play()
+    })
   },
 
   onReady() {
@@ -124,7 +136,7 @@ Page({
 
   backTo2d() {
     wx.navigateBack({
-      fail: () => wx.reLaunch({ url: '/pages/index/index' }),
+      fail: () => wx.reLaunch({ url: '/pages/index/index?from=3d' }),
     })
   },
 
@@ -184,6 +196,7 @@ Page({
 
     const audio = this.rollAudios[this.rollAudioIndex]
     this.rollAudioIndex = (this.rollAudioIndex + 1) % this.rollAudios.length
+    audio.volume = 0.8
     audio.seek(0)
     audio.play()
   },
@@ -277,12 +290,8 @@ Page({
   onCupTouchEnd() {
     if (this.data.rolling) return
 
-    const targetY = this.data.covered ? this.cupClosedY : CUP_OPEN_Y
-    this.currentCupY = targetY
-    this.setData({
-      draggingCup: false,
-      cupY: targetY,
-    })
+    // 自由拖动模式：松手后骰盅停留在当前位置，不吸附到开/关位置
+    this.setData({ draggingCup: false })
   },
 
   changeDiceCount(event) {

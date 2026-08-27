@@ -95,7 +95,13 @@ Page({
     countOptions: createCountOptions(),
   },
 
-  onLoad() {
+  onLoad(options) {
+    // 默认进入 3D 模式；带 from=3d 参数时表示从 3D 页返回，停留在 2D
+    if (!options || options.from !== '3d') {
+      wx.reLaunch({ url: '/package3d/pages/dice3d/index' })
+      return
+    }
+
     this.rollAudioIndex = 0
     this.rollAudios = [this.createRollAudio(), this.createRollAudio()]
     this.updateDice(createDice(this.data.diceCount))

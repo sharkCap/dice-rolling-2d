@@ -2,7 +2,7 @@ page {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #183a32;
+  background: #101114;
   color: #ffffff;
 }
 
@@ -19,8 +19,8 @@ page {
 
 .game-surface {
   position: relative;
-  background: #183a32;
-  box-shadow: inset 0 0 100rpx rgba(0, 0, 0, 0.34);
+  background: radial-gradient(130% 95% at 50% 38%, #2b2f3a 0%, #17181d 55%, #0d0e12 100%);
+  box-shadow: inset 0 0 140rpx rgba(0, 0, 0, 0.5);
 }
 
 .hud {
@@ -50,7 +50,7 @@ page {
   justify-content: center;
   border: 2rpx solid rgba(255, 255, 255, 0.28);
   border-radius: 50%;
-  background: rgba(8, 24, 21, 0.78);
+  background: rgba(17, 19, 24, 0.82);
   color: #ffffff;
   font-size: 22rpx;
   font-weight: 900;
@@ -100,7 +100,7 @@ page {
   padding-top: 9rpx;
   border: 2rpx solid rgba(255, 255, 255, 0.2);
   border-radius: 10rpx;
-  background: rgba(8, 24, 21, 0.72);
+  background: rgba(17, 19, 24, 0.76);
   text-align: center;
 }
 
@@ -254,7 +254,7 @@ page {
   top: 24rpx;
   flex-direction: column;
   border: 2rpx solid rgba(255, 255, 255, 0.28);
-  background: rgba(8, 24, 21, 0.82);
+  background: rgba(17, 19, 24, 0.86);
   box-shadow: 0 10rpx 18rpx rgba(0, 0, 0, 0.26);
 }
 
@@ -326,8 +326,8 @@ page {
 .settings-sheet {
   width: 100%;
   padding: 28rpx 30rpx calc(42rpx + env(safe-area-inset-bottom));
-  border-radius: 12rpx 12rpx 0 0;
-  background: #10241f;
+  border-radius: 20rpx 20rpx 0 0;
+  background: #171920;
   box-shadow: 0 -12rpx 35rpx rgba(0, 0, 0, 0.3);
   box-sizing: border-box;
 }
@@ -353,8 +353,8 @@ page {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: #29443b;
-  color: #d7e4df;
+  background: #262a33;
+  color: #c9d2de;
   font-size: 34rpx;
   line-height: 1;
 }
@@ -382,7 +382,7 @@ page {
 
 .setting-hint {
   margin-top: 6rpx;
-  color: #a4bbb3;
+  color: #98a2b0;
   font-size: 20rpx;
   line-height: 28rpx;
 }
@@ -396,7 +396,7 @@ page {
   overflow: hidden;
   border: 2rpx solid rgba(255, 255, 255, 0.18);
   border-radius: 10rpx;
-  background: #18362e;
+  background: #1e2129;
 }
 
 .stepper-button {
@@ -405,7 +405,7 @@ page {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #29443b;
+  background: #2a2f3a;
   color: #ffffff;
   font-size: 34rpx;
   line-height: 1;
